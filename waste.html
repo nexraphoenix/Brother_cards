@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Brother's Day!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      /* Custom keyframes for animations, as not all are directly in Tailwind */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.05);
+        }
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes expandIn {
+        from {
+          transform: scale(0.9);
+          height: 0;
+          padding: 0;
+          margin-top: 0;
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          height: auto;
+          padding: 15px;
+          margin-top: 20px;
+          opacity: 1;
+        }
+      }
+      @keyframes borderColorChange {
+        from {
+          border-color: #e67e22; /* Tailwind orange-600 */
+        }
+        to {
+          border-color: #d97706; /* A slightly darker orange for pulse effect */
+        }
+      }
+      @keyframes slideInBottom {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Apply custom animations using Tailwind's arbitrary values */
+      .animate-fadeIn {
+        animation: fadeIn 1s ease-in-out;
+      }
+      .animate-pulse {
+        animation: pulse 2s infinite alternate;
+      }
+      .animate-slideIn {
+        animation: slideIn 0.5s ease-out;
+      }
+      .animate-expandIn {
+        animation: expandIn 0.3s ease-out forwards;
+      }
+      .animate-borderColorChange {
+        animation: borderColorChange 2s infinite alternate;
+      }
+      .animate-slideInBottom {
+        animation: slideInBottom 0.5s ease-in-out;
+      }
+
+      /* Custom styles for the message box */
+      .message-box-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .message-box {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      /* Loading indicator styles */
+      #loading-indicator {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 20px 40px;
+        border-radius: 10px;
+        z-index: 2000;
+        display: none; /* Hidden by default */
+        font-size: 1.2em;
+      }
+    </style>
+  </head>
+  <body class="font-sans bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+    <div id="message-box-container" class="hidden message-box-overlay">
+      <div class="message-box">
+        <p id="message-box-text" class="mb-4 text-lg"></p>
+        <button
+          onclick="hideMessageBox()"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+
+    <div id="loading-indicator">Generating Card...</div>
+
+    <header class="bg-blue-500 text-white py-4 text-center animate-fadeIn animate-pulse">
+      <h1 class="text-3xl font-bold">Happy Brother's Day!</h1>
+    </header>
+
+    <main class="flex-grow">
+      <section id="wish-section" class="p-5 mx-auto my-5 max-w-xl bg-white rounded-lg shadow-md animate-slideIn">
+        <h2 class="text-2xl font-semibold text-blue-600 transition-colors duration-300 hover:text-blue-800 mb-4">
+          Send a Special Wish to Your Sibling
+        </h2>
+        <form id="wish-form" class="space-y-4">
+          <div>
+            <label for="recipient-name" class="block mb-1 font-bold">Your's Name:</label>
+            <input
+              type="text"
+              id="recipient-name"
+              name="recipient-name"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+              required
+            />
+          </div>
+
+          <div>
+            <label for="sender-job" class="block mb-1 font-bold">Your Job Role:</label>
+            <select
+              id="sender-job"
+              name="sender-job"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+            >
+              <option value="Engineer">Engineer</option>
+              <option value="Doctor">Doctor</option>
+              <option value="Teacher">Teacher</option>
+              <option value="Chef">Chef</option>
+              <option value="Artist">Artist</option>
+              <option value="Programmer">Programmer</option>
+              <option value="Nurse">Nurse</option>
+              <option value="Lawyer">Lawyer</option>
+              <option value="Accountant">Accountant</option>
+              <option value="Salesperson">Salesperson</option>
+              <option value="Website Tester">Website Tester</option>
+              <option value="Business Man">Business Man</option>
+              <option value="Student">Student</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="relationship-type" class="block mb-1 font-bold">Who am I to You?</label>
+            <select
+              id="relationship-type"
+              name="relationship-type"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+            >
+              <option value="Ally">Ally</option>
+              <option value="Ride-or-Die">Ride-or-Die</option>
+              <option value="Associate">Associate</option>
+              <option value="Destined Partner">Destined Partner</option>
+              <option value="Eternal Partner">Eternal Partner</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="change-request" class="block mb-1 font-bold">What would you like them to change?</label>
+            <input
+              type="text"
+              id="change-request"
+              name="change-request"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+              required
+            />
+          </div>
+
+          <div id="special-question-div" class="mt-4 text-lg font-semibold"></div>
+          <input
+            type="text"
+            id="special-answer"
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 hidden"
+            placeholder="Your answer..."
+            oninput="enableWishBtn()"
+            disabled
+          />
+
+          <div class="flex justify-between mt-6">
+            <button
+              type="button"
+              id="ask-question-btn"
+              onclick="askSpecialQuestion()"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md cursor-pointer text-base transition-all duration-200 hover:scale-105 active:scale-95 shadow-md"
+            >
+              Generate Question
+            </button>
+            <button
+              type="button"
+              id="generate-wish-btn"
+              onclick="generateWish()"
+              class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md cursor-pointer text-base transition-all duration-200 hover:scale-105 active:scale-95 shadow-md"
+              disabled
+            >
+              Generate Wish & Gift Card
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section id="card-section" class="hidden p-5 mx-auto my-5 max-w-xl bg-white rounded-lg shadow-md animate-slideIn">
+        <div class="card-container mb-8">
+          <div id="gift-card-top" class="p-4 border-2 border-dashed border-orange-500 rounded-md bg-orange-50 text-center animate-pulse animate-borderColorChange">
+            <strong class="text-xl text-orange-600 transition-colors duration-300 hover:text-red-700 block mb-2">Card For My Sibling</strong>
+            <p class="text-lg">
+              To: My Amazing Sibling, My <span id="gift-relationship-top" class="font-semibold"></span>
+              <span id="gift-to-name-top" class="font-semibold"></span>
+            </p>
+            <div class="message mt-2 italic text-gray-600" id="message-top"></div>
+          </div>
+          <button
+            onclick="downloadCard('gift-card-top', 'Brothers_Day_Wish_For_Sibling.png')"
+            class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md cursor-pointer text-base transition-all duration-200 hover:scale-105 active:scale-95 shadow-md"
+          >
+            Download Card For Sibling
+          </button>
+        </div>
+
+        <div class="text-center my-8">
+          <h3 class="text-2xl font-bold text-blue-700 mb-2">Happy Brother's Day, <span id="recipient-name-display"></span>!</h3>
+          <p id="sender-role-importance" class="text-lg mb-2"></p>
+          <p class="text-lg">
+            From your perspective, you're <span id="relationship-display" class="font-semibold"></span>!
+          </p>
+        </div>
+
+        <div class="card-container">
+          <div id="gift-card-bottom" class="p-4 border-2 border-dashed border-orange-500 rounded-md bg-orange-50 text-center animate-pulse animate-borderColorChange">
+            <strong class="text-xl text-orange-600 transition-colors duration-300 hover:text-red-700 block mb-2">Card For Myself (A Reflection)</strong>
+            <p class="text-lg">
+              From: <span id="sender-name-bottom" class="font-semibold">Your Sibling</span><br />
+              To: My Amazing <span id="gift-sender-job-bottom" class="font-semibold"></span>, My
+              <span id="gift-relationship-bottom" class="font-semibold"></span>
+              <span id="gift-to-sender-name-bottom" class="font-semibold"></span>
+            </p>
+            <div class="message mt-2 italic text-gray-600" id="message-bottom"></div>
+          </div>
+          <button
+            onclick="downloadCard('gift-card-bottom', 'Brothers_Day_Reflection_For_Myself.png')"
+            class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md cursor-pointer text-base transition-all duration-200 hover:scale-105 active:scale-95 shadow-md"
+          >
+            Download Card For Myself
+          </button>
+        </div>
+
+        <div class="text-center mt-8">
+          <button
+            onclick="downloadBothCards('Brothers_Day_Combined_Cards.png')"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md cursor-pointer text-base transition-all duration-200 hover:scale-105 active:scale-95 shadow-md mr-4"
+          >
+            Download Both Cards
+          </button>
+          <button
+            onclick="goBack()"
+            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md cursor-pointer text-base transition-all duration-200 hover:scale-105 active:scale-95 shadow-md"
+          >
+            Back
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="text-center py-4 bg-gray-800 text-white mt-auto animate-slideInBottom">
+      <p>&copy; 2025 Happy Brother's Day!</p>
+    </footer>
+
+    <script>
+      // Function to show a custom message box
+      function showMessageBox(message) {
+        document.getElementById("message-box-text").textContent = message;
+        document.getElementById("message-box-container").classList.remove("hidden");
+      }
+
+      // Function to hide the custom message box
+      function hideMessageBox() {
+        document.getElementById("message-box-container").classList.add("hidden");
+      }
+
+      // Function to show loading indicator
+      function showLoading() {
+        document.getElementById('loading-indicator').style.display = 'block';
+      }
+
+      // Function to hide loading indicator
+      function hideLoading() {
+        document.getElementById('loading-indicator').style.display = 'none';
+      }
+
+      // Data for importance messages based on job role
+      const importanceMessages = {
+        Engineer: [
+          `As an Engineer, you're building the future with your innovative solutions and problem-solving skills. You've also been a great friend to me.`,
+          `Your dedication to precision and technical excellence as an Engineer is truly commendable. I value your guidance as a mentor.`,
+          `Your ability to design and create as an Engineer makes a significant impact on the world around us. You're a true inspiration to me.`,
+          `You always bring a unique perspective to problems, just like you do when you're explaining complex engineering concepts to me. Thanks for being a challenger.`,
+          `Even when things get tough, your resilience as an Engineer inspires me. It's a quality I see in you as a brother too, and that makes you a protector.`,
+        ],
+        Doctor: [
+          `As a Doctor, your compassion and commitment to healing make a profound difference in people's lives. You're also a best friend for life.`,
+          `Your expertise and dedication to medical science as a Doctor are deeply valued and appreciated. I value your support as a protector.`,
+          `The care and support you provide as a Doctor bring comfort and hope to those in need. You're a true reflection of compassion.`,
+          `Your ability to stay calm under pressure as a Doctor is something I've always admired and appreciated in our relationship. You're a great mentor and guide.`,
+          `You have a natural ability to connect with people, a skill that makes you an excellent Doctor and a caring brother and friend.`,
+        ],
+        Teacher: [
+          `As a Teacher, you shape young minds and inspire a lifelong love of learning. You are a best friend for life.`,
+          `Your patience and guidance as a Teacher have a lasting impact on your students' lives. You're a true mentor and guide.`,
+          `Your dedication to education and knowledge as a Teacher is truly admirable. You have been a reflection and legacy for me.`,
+          `Your ability to explain things clearly and patiently, a skill you use as a Teacher, has always helped me, too. You are a challenger for me.`,
+          `You're a natural mentor, whether in the classroom or in our relationship as brothers. And also a protector.`,
+        ],
+        Chef: [
+          `As a Chef, you create culinary masterpieces that bring joy and delight to people's lives. You are a great friend.`,
+          `Your passion and creativity in the kitchen as a Chef are truly inspiring. You are a best friend for life.`,
+          `Your ability to craft delicious experiences as a Chef is a gift that is greatly appreciated. You are a reflection and legacy for me.`,
+          `The care you put into your culinary creations is similar to the care and thought you put into our relationship. You are a mentor and guide.`,
+          `Your creativity in the kitchen is only matched by your creativity in coming up with new things for us to do together. You are a challenger for me.`,
+        ],
+        Artist: [
+          `As an Artist, you bring beauty and emotion into the world through your unique creative vision. You are a friend.`,
+          `Your talent and imagination as an Artist inspire and captivate those who experience your work. You are a best friend for life.`,
+          `Your ability to express yourself and connect with others through art is a true gift. You are a reflection and legacy for me.`,
+          `Your artistic eye helps you see the beauty in everything, a perspective you've shared with me many times. You are a mentor and guide.`,
+          `Your passion for your art is inspiring, and it's just one of the many things I admire about you. You are a protector for me.`,
+        ],
+        Programmer: [
+          `As a Programmer, you possess the power to shape the digital world with your code and innovation. You are a friend.`,
+          `Your logical thinking and problem-solving skills as a Programmer are highly valuable and impressive. You are a challenger.`,
+          `Your ability to create and build software as a Programmer has a significant impact on our daily lives. You are a reflection and legacy.`,
+          `Your ability to break down complex problems like a programmer has always helped me with my own challenges. You are a mentor and guide.`,
+          `You're always thinking a few steps ahead, a skill that makes you a great programmer and a supportive brother. You are a best friend for life.`,
+        ],
+        Nurse: [
+          `As a Nurse, your empathy and dedication to patient care make a significant difference in people's well-being. You are a friend.`,
+          `Your expertise and calm demeanor in high-pressure situations as a Nurse are truly admirable. You are a protector.`,
+          `Your ability to provide comfort and support as a Nurse brings reassurance and healing to those in your care. You are a reflection and a legacy.`,
+          `Your caring nature extends beyond your work as a Nurse; you're always there to support those you care about. You are a mentor and guide.`,
+          `You handle tough situations with grace and strength, qualities that make you an amazing Nurse and brother. You are a best friend.`,
+        ],
+        Lawyer: [
+          `As a Lawyer, you uphold justice and fight for what is right with unwavering dedication and integrity. You are a challenger.`,
+          `Your analytical skills and persuasive arguments as a Lawyer are highly respected and valued. You are a mentor and guide.`,
+          `Your commitment to defending the rights of others as a Lawyer makes a significant impact on society. You are a reflection and legacy.`,
+          `Your ability to argue your point is as strong in professional settings as it is in our personal debates. You are a good friend.`,
+          `You're always willing to stand up for what you believe in, a trait I admire in you as both a Lawyer and a brother. You are a protector.`,
+        ],
+        Accountant: [
+          `As an Accountant, you ensure financial stability and accuracy with your meticulous attention to detail. You are a friend.`,
+          `Your expertise in financial management and analysis as an Accountant is crucial for sound decision-making. You are a mentor and guide.`,
+          `Your dedication to maintaining order and transparency as an Accountant is greatly appreciated. You are a reflection and legacy.`,
+          `Your attention to detail and organization as an accountant is something I have always valued. You are a best friend.`,
+          `You bring a sense of order and calm, just like you do when you help me with my problems. You are a protector.`,
+        ],
+        Salesperson: [
+          `As a Salesperson, you connect people with valuable products and services through your excellent communication skills. You are a friend.`,
+          `Your ability to build relationships and understand customer needs as a Salesperson is truly commendable. You are a best friend.`,
+          `Your drive and enthusiasm as a Salesperson contribute to growth and success in the business world. You are a reflection and legacy.`,
+          `You have a real talent for connecting with people, a skill that makes you a great salesperson and a wonderful brother. You are a mentor and guide.`,
+          `Your positive energy and enthusiasm are infectious, both in your professional life and in our relationship. You are a challenger.`,
+        ],
+        "Website Tester": [
+          `As a Website Tester, you ensure the quality and functionality of digital experiences. You are a friend.`,
+          `Your keen eye for detail and analytical approach are crucial in identifying and resolving issues. You are a challenger.`,
+          `Your work helps create seamless and user-friendly online environments. You are a reflection and legacy.`,
+          `Your thoroughness and attention to detail are evident not just in your work, but also in how you approach everything you do. You are a best friend.`,
+          `You have a knack for finding solutions, a skill that's valuable in your profession and in our personal relationship. You are a mentor and guide.`,
+        ],
+        "Business Man": [
+          `As a Business Man, you drive growth and innovation with your strategic thinking and leadership. You are a friend.`,
+          `Your ability to make sound decisions and navigate complex challenges is highly impressive. You are a mentor and guide.`,
+          `Your work contributes to the economic landscape and creates opportunities. You are a reflection and legacy.`,
+          `Your ambition and drive are truly inspiring, and you approach your goals with determination. You are a challenger.`,
+          `You have a talent for leadership and inspiring others, qualities that I admire in you. You are a protector.`,
+        ],
+        Student: [
+          `As a Student, you are dedicated to learning and expanding your knowledge. You are a friend.`,
+          `Your commitment to your studies and intellectual growth is admirable. You are a reflection and legacy.`,
+          `Your pursuit of education will prepare you for a successful future. You are a mentor and guide.`,
+          `Your curiosity and thirst for knowledge are truly inspiring. You are a best friend.`,
+          `You approach your studies with discipline and perseverance, qualities that will take you far in life. You are a challenger.`,
+        ],
+      };
+
+      // Data for relationship messages
+      const relationshipMessages = {
+        Ally: "an invaluable ally, someone I can always count on.",
+        "Ride-or-Die": "my ride-or-die, someone who's always there for me.",
+        Associate: "a close associate, and a great friend.",
+        "Destined Partner": "my destined partner, and an eternal friend.",
+        "Eternal Partner": "my eternal partner in life.",
+      };
+
+      // Messages for the "Card For Myself" section, keyed by recipient's name
+      // This represents what the RECIPIENT might wish the SENDER would change.
+      const changeRequestMessages = {
+        Kiran: {
+          message:
+            "What's one of your earliest or fondest memories of us growing up together?",
+          nickname: "Knight",
+        },
+        Pramod: {
+          message: "What's something you're really passionate about?",
+          nickname: "Shield",
+        },
+        Aksar: {
+          message: "What's a book, movie, or piece of music that has really resonated with you lately and why?",
+          nickname: "Sentinel",
+        },
+        Abhya: {
+          message: "What's a piece of advice you've received that has really stuck with you?",
+          nickname: "Guardian Dog",
+        },
+        Sandeep: {
+          message: "What's the most embarrassing thing that's ever happened to you?.",
+          nickname: "Soulmate Brother",
+        },
+        Shreyas: {
+          message: "If you could change one thing about the healthcare system, what would it be?",
+          nickname: "Guardian Angel",
+        },
+        Sunil: {
+          message: "What's a project or assignment you're really excited or nervous about?",
+          nickname: "Senior Bro",
+        },
+        Tharun: {
+          message: "What's one thing you've learned recently that you found really fascinating?",
+          nickname: "Senior Bro",
+        },
+        Darshan: {
+          message: "What's a memorable experience we've shared that you often think about?",
+          nickname: "Sweet Soul",
+        },
+        Shivu: {
+          message: "Is there anything specific you're hoping to talk about or learn?",
+          nickname: "Darling Soul",
+        },
+        Girish: {
+          message: "What's something you're carrying right now, and how can I support you?",
+          nickname: "Original Gangster",
+        },
+        Rakesh: {
+          message: "I wish you would trust yourself more.",
+          nickname: "Original Gangster",
+        },
+        Muzamil: {
+          message: "I wish you would trust yourself more.",
+          nickname: "Original Gangster",
+        },
+        Sukumar: {
+          message: "What's a moment in our history that you think we'll always remember?",
+          nickname: "Suku",
+        },
+        Sunny: {
+          message: "What's something you feel we understand about each other that maybe no one else does?",
+          nickname: "Original Gangster",
+        },
+        Venkatesh: {
+          message: "Looking back, what's a moment when you felt our bond was the strongest?",
+          nickname: "Venky",
+        },
+        Rudrappa: {
+          message: "Anything interesting happen today?",
+          nickname: "Rudra",
+        },
+        Zaheer: {
+          message: "What's something you're really proud of about yourself lately?",
+          nickname: "Original Gangster",
+        },
+        Raaghavindhra: {
+          message: "Is there anything specific you know he might be thinking about or doing?",
+          nickname: "Raaghav",
+        },
+        Chetan: {
+          message: "What kind of conversation are you hoping to have?",
+          nickname: "Fortress",
+        },
+        Abhiram: {
+          message: "Anything fun we should plan to do together soon?",
+          nickname: "Honorary Bro",
+        },
+        Basu: {
+          message: "What's a challenge you're facing, and how are you dealing with it?",
+          nickname: "Warden Brother",
+        },
+        // Add more names and messages as needed
+      };
+
+      const genericFeedbackQuestion = "What is something special you want to share about your bond?";
+
+
+      // Function to generate the wish and display the cards
+      function generateWish() {
+        const recipientNameInput = document.getElementById("recipient-name");
+        const senderJobInput = document.getElementById("sender-job");
+        const relationshipTypeInput = document.getElementById("relationship-type");
+        const changeRequestInput = document.getElementById("change-request");
+        const specialAnswerInput = document.getElementById("special-answer");
+
+        const recipientName = recipientNameInput.value.trim();
+        const senderJob = senderJobInput.value.trim();
+        const relationshipType = relationshipTypeInput.value.trim();
+        const changeRequest = changeRequestInput.value.trim();
+        const specialAnswer = specialAnswerInput.value.trim();
+
+        // Validate all required fields
+        if (!recipientName || !changeRequest || (document.getElementById("ask-question-btn").disabled && !specialAnswer)) {
+          showMessageBox("Please fill out all required fields.");
+          return;
+        }
+
+        // Disable recipient name input once wish is generated
+        recipientNameInput.readOnly = true;
+        recipientNameInput.disabled = true;
+
+        // --- Populate Top Card (For Sibling - from Sender) ---
+        document.getElementById("gift-relationship-top").textContent = relationshipType;
+        document.getElementById("gift-to-name-top").textContent = recipientName;
+        document.getElementById("message-top").innerHTML = `
+          "Whatever the form, the Supreme Lord is eternally present in everyone's heart." - Bhagavad Gita
+          <br>
+          You wish I would change: <span class="font-medium">${changeRequest}</span>
+          <br>
+          Validated : Untill The Death of the Body<br>
+          Wishing you all the best on Brother's Day! Your presence in my life is invaluable.
+        `;
+
+        // --- Populate Middle Content ---
+        document.getElementById("recipient-name-display").textContent = recipientName;
+
+        let importanceMessage;
+        importanceMessage = `Your dedication and presence are truly appreciated.`;
+        document.getElementById("sender-role-importance").textContent = importanceMessage;
+        document.getElementById("relationship-display").textContent = relationshipMessages[relationshipType];
+
+        // --- Populate Bottom Card (For Myself - Reflection from Recipient to Sender) ---
+        document.getElementById("sender-name-bottom").textContent = "Your Sibling";
+        document.getElementById("gift-sender-job-bottom").textContent = senderJob;
+        document.getElementById("gift-relationship-bottom").textContent = relationshipType;
+        document.getElementById("gift-to-sender-name-bottom").textContent = "You";
+
+        let feedbackMsg = "";
+        let nickname = "";
+        // Check if there's specific feedback for the RECIPIENT's name
+        if (changeRequestMessages.hasOwnProperty(recipientName)) {
+          feedbackMsg = changeRequestMessages[recipientName].message;
+          nickname = changeRequestMessages[recipientName].nickname;
+        }
+
+        document.getElementById("message-bottom").innerHTML = `
+          "May we always support and inspire each other."<br>
+          <span class="text-sm text-gray-600">
+            One who is not envious but is a kind friend to all living entities, who does not think himself a proprietor and is free from false ego, who is equal in both happiness and distress, who is tolerant, always satisfied, self-controlled, and engaged in devotional service with determination, his mind and intelligence fixed on Me—such a devotee of Mine is very dear to Me.
+          </span><br>
+          ${feedbackMsg ? `<span class="font-medium">I wish you would change:</span> ${feedbackMsg}<br>` : ""}
+          ${nickname ? `<strong>Nickname:</strong> ${nickname}<br>` : ""}
+          ${specialAnswer ? `<strong>Your Answer:</strong> ${specialAnswer}<br>` : ""}
+          Validated : Untill The Death of the Body<br>
+          Thank you for being my sibling. Happy Brother's Day to us!
+        `;
+
+        // Hide form section, show card section
+        document.getElementById("wish-section").classList.add("hidden");
+        document.getElementById("card-section").classList.remove("hidden");
+      }
+
+      // Function to navigate back to the form
+      function goBack() {
+        document.getElementById("wish-section").classList.remove("hidden");
+        document.getElementById("card-section").classList.add("hidden");
+
+        // Re-enable recipient name input when going back
+        const recipientNameInput = document.getElementById("recipient-name");
+        recipientNameInput.readOnly = false;
+        recipientNameInput.disabled = false;
+      }
+
+      // Function to ask a special question (now generic or personalized by recipient's name)
+      function askSpecialQuestion() {
+        const recipientNameInput = document.getElementById("recipient-name");
+        const recipientName = recipientNameInput.value.trim().toLowerCase(); // Convert to lowercase for case-insensitive matching
+        const questionDiv = document.getElementById("special-question-div");
+        const answerInput = document.getElementById("special-answer");
+        const askBtn = document.getElementById("ask-question-btn");
+
+        if (!recipientName) {
+          showMessageBox("Please enter your brother's name first.");
+          return;
+        }
+
+        // Disable recipient name input once question is generated
+        recipientNameInput.readOnly = true;
+        recipientNameInput.disabled = true;
+
+        let question = "";
+        // Find the first matching name in the changeRequestMessages object
+        const matchingName = Object.keys(changeRequestMessages).find((name) =>
+          recipientName.includes(name.toLowerCase()) // Check if the input contains the name as a substring
+        );
+
+        if (matchingName) {
+          question = changeRequestMessages[matchingName].message;
+        } else {
+          question = genericFeedbackQuestion; // Use the generic question if no match is found
+        }
+
+        questionDiv.innerHTML = `<strong class="text-blue-700">Special Question for ${recipientName}:</strong> ${question}`;
+        answerInput.classList.remove("hidden");
+        answerInput.disabled = false;
+        askBtn.disabled = true;
+        enableWishBtn(); // Re-evaluate the generate wish button state
+      }
+
+      // Function to enable/disable the "Generate Wish & Gift Card" button
+      function enableWishBtn() {
+        const recipientName = document.getElementById("recipient-name").value.trim();
+        const changeRequest = document.getElementById("change-request").value.trim();
+        const specialAnswerInput = document.getElementById("special-answer");
+        const genWishBtn = document.getElementById("generate-wish-btn");
+        const askBtn = document.getElementById("ask-question-btn");
+
+        // The button is enabled if:
+        // 1. All initial required fields are filled (recipientName, changeRequest)
+        // 2. AND (If the special question has been asked, the answer must be filled)
+        const allInitialFieldsFilled = recipientName !== "" && changeRequest !== "";
+        const specialQuestionAnswered = !askBtn.disabled ? true : specialAnswerInput.value.trim() !== "";
+
+        genWishBtn.disabled = !(allInitialFieldsFilled && specialQuestionAnswered);
+      }
+
+      // Function to download a single card as an image
+      async function downloadCard(cardId, filename) {
+        showLoading(); // Show loading indicator
+        const cardElement = document.getElementById(cardId);
+
+        // Temporarily adjust styles for better capture if needed (e.g., remove scrollbars)
+        const originalOverflow = cardElement.style.overflow;
+        cardElement.style.overflow = 'visible';
+
+        try {
+          const canvas = await html2canvas(cardElement, {
+            scale: 2, // Increase scale for higher resolution image
+            logging: false, // Disable logging to console
+            useCORS: true, // Enable CORS if you have external images (though not used here)
+            letterRendering: true,
+            allowTaint: true,
+          });
+
+          const image = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.href = image;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } catch (error) {
+          console.error("Error generating card image:", error);
+          showMessageBox("Failed to generate card image. Please try again.");
+        } finally {
+          cardElement.style.overflow = originalOverflow;
+          hideLoading(); // Hide loading indicator
+        }
+      }
+
+      // Function to download both cards in one file
+      async function downloadBothCards(filename) {
+        showLoading(); // Show loading indicator
+
+        const cardTop = document.getElementById('gift-card-top');
+        const cardBottom = document.getElementById('gift-card-bottom');
+        const middleContent = document.querySelector('#card-section > .text-center'); // Select the middle content div
+
+        // Create a temporary container to hold both cards and middle content for capture
+        const tempContainer = document.createElement('div');
+        tempContainer.style.display = 'flex';
+        tempContainer.style.flexDirection = 'column';
+        tempContainer.style.alignItems = 'center';
+        tempContainer.style.padding = '20px'; // Add some padding around the combined image
+        tempContainer.style.backgroundColor = '#f4f4f4'; // Match body background or choose a neutral color
+        tempContainer.style.borderRadius = '8px';
+        tempContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+        tempContainer.style.width = 'fit-content'; // Adjust width to content
+        tempContainer.style.margin = 'auto'; // Center the container
+
+        // Clone the cards and middle content to avoid modifying original DOM elements
+        const clonedCardTop = cardTop.cloneNode(true);
+        const clonedCardBottom = cardBottom.cloneNode(true);
+        const clonedMiddleContent = middleContent.cloneNode(true);
+
+        // Remove download buttons from cloned cards if they are part of the card elements
+        // (Assuming buttons are outside the card div itself, but good to be safe)
+        const buttonsInClonedTop = clonedCardTop.querySelectorAll('button');
+        buttonsInClonedTop.forEach(btn => btn.remove());
+        const buttonsInClonedBottom = clonedCardBottom.querySelectorAll('button');
+        buttonsInClonedBottom.forEach(btn => btn.remove());
+
+
+        tempContainer.appendChild(clonedCardTop);
+        tempContainer.appendChild(clonedMiddleContent); // Add middle content between cards
+        tempContainer.appendChild(clonedCardBottom);
+
+        // Add some margin between elements in the combined image
+        clonedCardTop.style.marginBottom = '20px';
+        clonedMiddleContent.style.marginBottom = '20px';
+
+
+        document.body.appendChild(tempContainer); // Append to body to make it renderable by html2canvas
+
+        // Temporarily adjust overflow for the container being captured
+        const originalContainerOverflow = tempContainer.style.overflow;
+        tempContainer.style.overflow = 'visible';
+
+        try {
+          const canvas = await html2canvas(tempContainer, {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            letterRendering: true,
+            allowTaint: true,
+            // Ensure the background is rendered if it's transparent by default
+            backgroundColor: null, // Let html2canvas determine, or set a specific color like '#f4f4f4'
+          });
+
+          const image = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.href = image;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } catch (error) {
+          console.error("Error generating combined card image:", error);
+          showMessageBox("Failed to generate combined card image. Please try again.");
+        } finally {
+          tempContainer.style.overflow = originalContainerOverflow; // Restore original overflow
+          document.body.removeChild(tempContainer); // Clean up the temporary container
+          hideLoading(); // Hide loading indicator
+        }
+      }
+
+      // Add event listeners to continuously check form validity
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById("recipient-name").addEventListener("input", enableWishBtn);
+        document.getElementById("change-request").addEventListener("input", enableWishBtn);
+      });
+    </script>
+  </body>
+</html>
